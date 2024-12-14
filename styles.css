@@ -1,79 +1,75 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  background: #f7f7f7;
-}
-
-.page-container {
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-}
-
-.central-container {
-  position: relative;
-  width: 80%;
-  max-width: 800px;
-  background: #fff;
-  border: 2px solid #ccc;
-  aspect-ratio: 16/9;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-#central-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
-}
-
-.info-box {
-  width: 100%;
-  background: #fff;
-  padding: 10px;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-#item-title {
-  margin: 5px 0;
-  font-size: 1.2em;
+  background-color: #f9f9f9;
   color: #333;
 }
 
-#item-description {
-  margin: 0;
-  font-size: 1em;
-  color: #666;
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
 }
 
-.thumbnails-container {
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 1200px;
+}
+
+#main-display {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#central-video {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#item-details {
+  margin-top: 10px;
+}
+
+#thumbnail-gallery {
   display: flex;
   flex-wrap: wrap;
-  width: 80%;
-  max-width: 800px;
-  justify-content: center;
-  margin-top: 20px;
   gap: 10px;
+  justify-content: center;
 }
 
 .thumbnail {
-  width: 80px;
-  height: 80px;
-  overflow: hidden;
-  border: 2px solid #ccc;
+  width: 100px;
+  height: auto;
   cursor: pointer;
-  background: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  transition: transform 0.2s ease;
 }
 
-.thumbnail img {
-  max-width: 100%;
-  max-height: 100%;
+.thumbnail:hover {
+  transform: scale(1.1);
+}
+
+footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
 }
