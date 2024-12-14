@@ -42,11 +42,39 @@ main {
   height: auto;
   border: 2px solid #ccc;
   border-radius: 5px;
-  cursor: pointer;
+  cursor: default; /* Default state (non-clickable) */
+  transition: cursor 0.3s ease;
 }
 
-#item-details {
-  margin-top: 10px;
+#central-video.active {
+  cursor: pointer; /* Clickable when active */
+}
+
+#item-title {
+  margin: 10px 0;
+}
+
+#item-title a {
+  text-decoration: none;
+  cursor: default; /* Default state (non-clickable) */
+  color: inherit;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+#item-title a.active {
+  text-decoration: underline; /* Indicate clickable */
+  cursor: pointer; /* Clickable when active */
+  color: #007BFF; /* Standard link color */
+}
+
+#item-title a.active:hover {
+  color: #0056b3; /* Darker blue on hover */
+}
+
+#item-description {
+  font-size: 1rem;
+  margin-top: 5px;
+  color: #666; /* Subtle color for the description */
 }
 
 #thumbnail-gallery {
@@ -64,7 +92,7 @@ main {
 }
 
 .thumbnail:hover {
-  transform: scale(1.1);
+  transform: scale(1.1); /* Slight zoom effect on hover */
 }
 
 footer {
@@ -72,4 +100,14 @@ footer {
   text-align: center;
   font-size: 0.9em;
   color: #666;
+}
+
+footer a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+  color: #0056b3;
 }

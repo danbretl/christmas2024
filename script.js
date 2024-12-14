@@ -7,8 +7,11 @@ let randomizeInterval; // Interval ID for randomizing text
 function initializeGallery() {
   const gallery = document.getElementById('thumbnail-gallery');
   const centralVideo = document.getElementById('central-video');
-  const itemTitle = document.getElementById('item-title');
+  const itemTitleLink = document.getElementById('item-title-link');
   const itemDescription = document.getElementById('item-description');
+
+  // Disable the title and video links initially
+  disableLink();
 
   items.forEach((item, index) => {
     const thumbnail = document.createElement('img');
@@ -21,7 +24,8 @@ function initializeGallery() {
       if (isTransitioning) return; // Prevent overlapping transitions
       isTransitioning = true;
 
-      startRandomization(itemTitle, itemDescription); // Start text randomization
+      disableLink(); // Disable links during transitions
+      startRandomization(itemTitleLink, itemDescription); // Start text randomization
 
       if (currentItem && currentItem !== item) {
         // Play the "clear" animation for the current item
@@ -29,12 +33,11 @@ function initializeGallery() {
         centralVideo.load();
         centralVideo.play();
 
-        // After "clear" animation, play the "show" animation for the new item
         setTimeout(() => {
           playShowAnimation(item);
         }, currentItem.clearDuration);
       } else {
-        // No current item or same item clicked, directly play "show" animation
+        // Play "show" animation directly
         playShowAnimation(item);
       }
     });
@@ -43,47 +46,65 @@ function initializeGallery() {
   });
 
   function playShowAnimation(item) {
-    // Set the video to the "show" animation for the new item
     centralVideo.src = item.showAnimation;
     centralVideo.load();
     centralVideo.play();
 
-    // Stop text randomization and update the details when the animation ends
     centralVideo.onended = () => {
       stopRandomization();
-      updateDetails(itemTitle, itemDescription, item);
-      centralVideo.pause();
-      isTransitioning = false; // Allow new transitions
+      updateDetails(itemTitleLink, itemDescription, item);
+      enableLink(item); // Enable links when the "show" animation ends
+      isTransitioning = false;
     };
 
-    currentItem = item; // Update the current item
+    currentItem = item; // Update current item
   }
 
   function startRandomization(titleElement, descriptionElement) {
     randomizeInterval = setInterval(() => {
-      titleElement.textContent = generateRandomString(10); // Random 10-character string
-      descriptionElement.textContent = generateRandomString(30); // Random 30-character string
-    }, 100); // Change every 100ms
+      titleElement.textContent = generateRandomString(10);
+      descriptionElement.textContent = generateRandomString(30);
+    }, 100);
   }
 
   function stopRandomization() {
-    clearInterval(randomizeInterval); // Stop randomizing text
+    clearInterval(randomizeInterval);
   }
 
   function updateDetails(titleElement, descriptionElement, item) {
-    titleElement.textContent = item.title; // Set the correct title
-    descriptionElement.textContent = item.description; // Set the correct description
+    titleElement.textContent = item.title;
+    descriptionElement.textContent = item.description;
+  }
+
+  function enableLink(item) {
+    // Update the title link
+    itemTitleLink.setAttribute("href", item.url); // Add the href dynamically
+    itemTitleLink.target = "_blank";
+    itemTitleLink.rel = "noopener noreferrer";
+    itemTitleLink.classList.add("active");
+
+    // Make the central video clickable
+    centralVideo.classList.add("active");
+    centralVideo.onclick = () => {
+      window.open(item.url, "_blank");
+    };
+  }
+
+  function disableLink() {
+    // Remove the href attribute completely
+    itemTitleLink.removeAttribute("href");
+    itemTitleLink.classList.remove("active");
+
+    // Reset the central video
+    centralVideo.classList.remove("active");
+    centralVideo.onclick = null;
   }
 
   function generateRandomString(length) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:",.<>?/\\~`';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+    return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
   }
 }
 
-// Initialize the gallery on page load
+// Initialize the gallery
 window.onload = initializeGallery;
