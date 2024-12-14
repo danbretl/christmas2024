@@ -58,6 +58,15 @@ function initializeGallery() {
   // Disable the title and video links initially
   disableLink();
 
+  // Check for a saved item in sessionStorage
+  const savedItemIndex = sessionStorage.getItem('lastDisplayedItemIndex');
+  if (savedItemIndex !== null) {
+    const savedItem = items[savedItemIndex];
+    if (savedItem) {
+      displayItem(savedItem); // Automatically display the saved item
+    }
+  }
+
   items.forEach((item, index) => {
     const thumbnail = document.createElement('img');
     thumbnail.src = item.thumbnail;
@@ -72,6 +81,8 @@ function initializeGallery() {
       disableLink(); // Disable links during transitions
       startRandomization(itemTitleLink, itemDescription); // Start text randomization
 
+      sessionStorage.setItem('lastDisplayedItemIndex', index); // Save the index of the clicked item
+
       if (currentItem && currentItem !== item) {
         // Play "clear" animation, followed by the new item's "show" animation
         const audioSource = playAudio(500); // Play audio during transition
@@ -85,6 +96,16 @@ function initializeGallery() {
 
     gallery.appendChild(thumbnail);
   });
+
+  function displayItem(item) {
+    currentItem = item; // Set the current item
+    updateDetails(itemTitleLink, itemDescription, item); // Update the title and description
+    enableLink(item); // Enable the link
+    centralVideo.src = item.showAnimation; // Set the central video to the "show" animation
+    centralVideo.poster = item.thumbnail; // Set the poster as a fallback
+    centralVideo.load();
+    centralVideo.play();
+  }
 
   function playShowAnimation(item, audioSource) {
     centralVideo.src = item.showAnimation;
