@@ -130,25 +130,31 @@ function initializeGallery() {
   }
 
   function enableLink(item) {
-    itemTitleLink.setAttribute("href", item.url); // Add the href dynamically
-    itemTitleLink.target = "_blank";
-    itemTitleLink.rel = "noopener noreferrer";
+    // Set the title link
+    itemTitleLink.setAttribute("href", item.url);
+    itemTitleLink.setAttribute("target", "_blank");
+    itemTitleLink.setAttribute("rel", "noopener noreferrer");
     itemTitleLink.classList.add("active");
 
     // Make the central video clickable
     centralVideo.classList.add("active");
+    centralVideo.style.cursor = "pointer"; // Ensure the cursor appears clickable
     centralVideo.onclick = () => {
       window.open(item.url, "_blank");
     };
   }
 
   function disableLink() {
-    itemTitleLink.removeAttribute("href"); // Remove the href attribute
+    // Reset the title link
+    itemTitleLink.removeAttribute("href");
+    itemTitleLink.removeAttribute("target");
+    itemTitleLink.removeAttribute("rel");
     itemTitleLink.classList.remove("active");
 
     // Reset the central video
     centralVideo.classList.remove("active");
-    centralVideo.onclick = null;
+    centralVideo.style.cursor = "default"; // Reset the cursor
+    centralVideo.onclick = null; // Remove click handler
   }
 
   function generateRandomString(length) {
