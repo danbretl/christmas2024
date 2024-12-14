@@ -3,6 +3,51 @@ import items from './items.js'; // Import the items array
 let currentItem = null; // Variable to track the currently displayed item
 let isTransitioning = false; // Prevent multiple transitions simultaneously
 let randomizeInterval; // Interval ID for randomizing text
+let audioBuffer = null; // Store decoded audio data
+
+// Audio setup
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let gainNode = audioContext.createGain(); // For volume control
+
+async function loadAudio(filePath) {
+  const response = await fetch(filePath);
+  const arrayBuffer = await response.arrayBuffer();
+  audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+}
+
+function playAudio(fadeDuration = 1000) {
+  if (!audioBuffer) return;
+
+  // Create a new audio source for each playback
+  const audioSource = audioContext.createBufferSource();
+  audioSource.buffer = audioBuffer;
+  audioSource.loop = true; // Enable looping
+
+  // Connect the source to the gain node and destination
+  audioSource.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  // Fade in the audio
+  gainNode.gain.setValueAtTime(0, audioContext.currentTime); // Start at volume 0
+  gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + fadeDuration / 1000); // Fade in
+
+  // Start playback
+  audioSource.start(0);
+
+  // Return the source so it can be stopped later
+  return audioSource;
+}
+
+function stopAudio(audioSource, fadeDuration = 1000) {
+  if (!audioSource) return;
+
+  // Fade out the audio
+  gainNode.gain.setValueAtTime(1, audioContext.currentTime); // Start at full volume
+  gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + fadeDuration / 1000); // Fade out
+
+  // Stop playback after fade-out completes
+  setTimeout(() => audioSource.stop(0), fadeDuration);
+}
 
 function initializeGallery() {
   const gallery = document.getElementById('thumbnail-gallery');
@@ -29,18 +74,19 @@ function initializeGallery() {
 
       if (currentItem && currentItem !== item) {
         // Play "clear" animation, followed by the new item's "show" animation
-        playClearAnimation(currentItem, item);
+        const audioSource = playAudio(1000); // Play audio during transition
+        playClearAnimation(currentItem, item, audioSource);
       } else {
         // Directly play the "show" animation if no item is currently displayed
-        playShowAnimation(item);
+        const audioSource = playAudio(1000); // Play audio during transition
+        playShowAnimation(item, audioSource);
       }
     });
 
     gallery.appendChild(thumbnail);
   });
 
-  function playShowAnimation(item) {
-    // Play the "show" animation for the new item
+  function playShowAnimation(item, audioSource) {
     centralVideo.src = item.showAnimation;
     centralVideo.load();
     centralVideo.play();
@@ -50,21 +96,20 @@ function initializeGallery() {
       updateDetails(itemTitleLink, itemDescription, item);
       enableLink(item); // Enable the link
       centralVideo.pause();
+      stopAudio(audioSource, 1000); // Fade out audio
       isTransitioning = false; // Allow new transitions
     };
 
     currentItem = item; // Update the current item
   }
 
-  function playClearAnimation(clearItem, nextItem) {
-    // Start playing the "clear" animation for the current item
+  function playClearAnimation(clearItem, nextItem, audioSource) {
     centralVideo.src = clearItem.clearAnimation;
     centralVideo.load();
     centralVideo.play();
 
     centralVideo.onended = () => {
-      // After "clear" animation ends, immediately start the "show" animation
-      playShowAnimation(nextItem);
+      playShowAnimation(nextItem, audioSource); // Play the "show" animation for the next item
     };
   }
 
@@ -112,5 +157,8 @@ function initializeGallery() {
   }
 }
 
-// Initialize the gallery
-window.onload = initializeGallery;
+// Load the audio and initialize the gallery
+window.onload = async () => {
+  initializeGallery();
+  await loadAudio('audio/flip.mp3'); // Load the audio file
+};
