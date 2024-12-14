@@ -130,39 +130,25 @@ function initializeGallery() {
   }
 
   function enableLink(item) {
-    // Set the title link
-    itemTitleLink.setAttribute("href", item.url);
-    itemTitleLink.setAttribute("target", "_blank");
-    itemTitleLink.setAttribute("rel", "noopener noreferrer");
+    itemTitleLink.setAttribute("href", item.url); // Add the href dynamically
+    itemTitleLink.target = "_blank";
+    itemTitleLink.rel = "noopener noreferrer";
     itemTitleLink.classList.add("active");
 
     // Make the central video clickable
     centralVideo.classList.add("active");
-    centralVideo.style.cursor = "pointer"; // Ensure the cursor appears clickable
-
     centralVideo.onclick = () => {
-      // Dynamically create and click a hidden <a> element
-      const link = document.createElement("a");
-      link.href = item.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      document.body.appendChild(link); // Append to the body
-      link.click(); // Programmatically trigger the click
-      document.body.removeChild(link); // Remove it after clicking
+      window.open(item.url, "_blank");
     };
   }
 
   function disableLink() {
-    // Reset the title link
-    itemTitleLink.removeAttribute("href");
-    itemTitleLink.removeAttribute("target");
-    itemTitleLink.removeAttribute("rel");
+    itemTitleLink.removeAttribute("href"); // Remove the href attribute
     itemTitleLink.classList.remove("active");
 
     // Reset the central video
     centralVideo.classList.remove("active");
-    centralVideo.style.cursor = "default"; // Reset the cursor
-    centralVideo.onclick = null; // Remove click handler
+    centralVideo.onclick = null;
   }
 
   function generateRandomString(length) {
