@@ -28,16 +28,10 @@ function initializeGallery() {
       startRandomization(itemTitleLink, itemDescription); // Start text randomization
 
       if (currentItem && currentItem !== item) {
-        // Play the "clear" animation for the current item
-        centralVideo.src = currentItem.clearAnimation;
-        centralVideo.load();
-        centralVideo.play();
-
-        setTimeout(() => {
-          playShowAnimation(item);
-        }, currentItem.clearDuration);
+        // Play "clear" animation, followed by the new item's "show" animation
+        playClearAnimation(currentItem, item);
       } else {
-        // Play "show" animation directly
+        // Directly play the "show" animation if no item is currently displayed
         playShowAnimation(item);
       }
     });
@@ -46,6 +40,7 @@ function initializeGallery() {
   });
 
   function playShowAnimation(item) {
+    // Play the "show" animation for the new item
     centralVideo.src = item.showAnimation;
     centralVideo.load();
     centralVideo.play();
@@ -53,31 +48,43 @@ function initializeGallery() {
     centralVideo.onended = () => {
       stopRandomization();
       updateDetails(itemTitleLink, itemDescription, item);
-      enableLink(item); // Enable links when the "show" animation ends
-      isTransitioning = false;
+      enableLink(item); // Enable the link
+      centralVideo.pause();
+      isTransitioning = false; // Allow new transitions
     };
 
-    currentItem = item; // Update current item
+    currentItem = item; // Update the current item
+  }
+
+  function playClearAnimation(clearItem, nextItem) {
+    // Start playing the "clear" animation for the current item
+    centralVideo.src = clearItem.clearAnimation;
+    centralVideo.load();
+    centralVideo.play();
+
+    centralVideo.onended = () => {
+      // After "clear" animation ends, immediately start the "show" animation
+      playShowAnimation(nextItem);
+    };
   }
 
   function startRandomization(titleElement, descriptionElement) {
     randomizeInterval = setInterval(() => {
-      titleElement.textContent = generateRandomString(10);
-      descriptionElement.textContent = generateRandomString(30);
-    }, 100);
+      titleElement.textContent = generateRandomString(10); // Random 10-character string
+      descriptionElement.textContent = generateRandomString(30); // Random 30-character string
+    }, 100); // Change every 100ms
   }
 
   function stopRandomization() {
-    clearInterval(randomizeInterval);
+    clearInterval(randomizeInterval); // Stop randomizing text
   }
 
   function updateDetails(titleElement, descriptionElement, item) {
-    titleElement.textContent = item.title;
-    descriptionElement.textContent = item.description;
+    titleElement.textContent = item.title; // Set the correct title
+    descriptionElement.textContent = item.description; // Set the correct description
   }
 
   function enableLink(item) {
-    // Update the title link
     itemTitleLink.setAttribute("href", item.url); // Add the href dynamically
     itemTitleLink.target = "_blank";
     itemTitleLink.rel = "noopener noreferrer";
@@ -91,8 +98,7 @@ function initializeGallery() {
   }
 
   function disableLink() {
-    // Remove the href attribute completely
-    itemTitleLink.removeAttribute("href");
+    itemTitleLink.removeAttribute("href"); // Remove the href attribute
     itemTitleLink.classList.remove("active");
 
     // Reset the central video
