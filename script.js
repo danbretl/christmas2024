@@ -139,8 +139,16 @@ function initializeGallery() {
     // Make the central video clickable
     centralVideo.classList.add("active");
     centralVideo.style.cursor = "pointer"; // Ensure the cursor appears clickable
+
     centralVideo.onclick = () => {
-      window.open(item.url, "_blank");
+      // Dynamically create and click a hidden <a> element
+      const link = document.createElement("a");
+      link.href = item.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link); // Append to the body
+      link.click(); // Programmatically trigger the click
+      document.body.removeChild(link); // Remove it after clicking
     };
   }
 
