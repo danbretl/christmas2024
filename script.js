@@ -15,7 +15,7 @@ async function loadAudio(filePath) {
   audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 }
 
-function playAudio(fadeDuration = 1000) {
+function playAudio(fadeDuration = 500) { // Shortened fade duration
   if (!audioBuffer) return;
 
   // Create a new audio source for each playback
@@ -38,7 +38,7 @@ function playAudio(fadeDuration = 1000) {
   return audioSource;
 }
 
-function stopAudio(audioSource, fadeDuration = 1000) {
+function stopAudio(audioSource, fadeDuration = 500) { // Shortened fade duration
   if (!audioSource) return;
 
   // Fade out the audio
@@ -74,11 +74,11 @@ function initializeGallery() {
 
       if (currentItem && currentItem !== item) {
         // Play "clear" animation, followed by the new item's "show" animation
-        const audioSource = playAudio(1000); // Play audio during transition
+        const audioSource = playAudio(500); // Play audio during transition
         playClearAnimation(currentItem, item, audioSource);
       } else {
         // Directly play the "show" animation if no item is currently displayed
-        const audioSource = playAudio(1000); // Play audio during transition
+        const audioSource = playAudio(500); // Play audio during transition
         playShowAnimation(item, audioSource);
       }
     });
@@ -96,7 +96,7 @@ function initializeGallery() {
       updateDetails(itemTitleLink, itemDescription, item);
       enableLink(item); // Enable the link
       centralVideo.pause();
-      stopAudio(audioSource, 1000); // Fade out audio
+      stopAudio(audioSource, 500); // Fade out audio
       isTransitioning = false; // Allow new transitions
     };
 
